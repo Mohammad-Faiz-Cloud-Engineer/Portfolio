@@ -76,12 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
             el.addEventListener('mouseenter', () => {   
                 cursorGlow.style.width = '600px';
                 cursorGlow.style.height = '600px';
-                cursorGlow.style.background = 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(0,0,0,0) 70%)';
+                cursorGlow.style.background = 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, rgba(34,211,238,0.04) 40%, transparent 70%)';
             });
             el.addEventListener('mouseleave', () => {
-                cursorGlow.style.width = '400px';
-                cursorGlow.style.height = '400px';
-                cursorGlow.style.background = 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 70%)';
+                cursorGlow.style.width = '450px';
+                cursorGlow.style.height = '450px';
+                cursorGlow.style.background = 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)';
             });
         });
     } else if (cursorGlow) {
