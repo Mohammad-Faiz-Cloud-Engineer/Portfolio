@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+
+# Build output
+dist/
+build/
+.cache/
+coverage/
+
+# Environment & Secrets
+.env
+.env.*
+*.pem
+*.key
+*.cert
+*.p12
+credentials.json
+serviceAccountKey.json
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+*.tmp
+*.temp
+*.pid
+*.seed
+
+# IDE files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.iml
+.vscode/settings.json
+
+# Backups
+*.bak
+*.orig
+*_backup.*
+*_old.*
+*_copy.*
+
+# Test artifacts
+.nyc_output/
+htmlcov/
+.pytest_cache/
+*.lcov
