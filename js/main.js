@@ -47,6 +47,17 @@
         return a + (b - a) * t;
     }
 
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>'"]/g, match => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        })[match]);
+    }
+
     // ── Cursor Glow (desktop only) ──────────────────────────────────────
     function initCursorGlow() {
         if (window.matchMedia('(max-width: 768px)').matches) return;
@@ -214,8 +225,8 @@
                 <div class="repos-loading glass-panel" style="padding: 2rem; text-align: center;">
                     <p style="color: var(--text-tertiary); font-size: 0.85rem;">
                         GitHub API rate limit reached. 
-                        <a href="https://github.com/${GITHUB_USERNAME}?tab=repositories" 
-                           target="_blank" rel="noopener"
+                        <a href="https://github.com/${escapeHTML(GITHUB_USERNAME)}?tab=repositories" 
+                           target="_blank" rel="noopener noreferrer"
                            style="color: var(--accent-secondary); text-decoration: underline;">
                             View repositories on GitHub →
                         </a>
@@ -262,23 +273,26 @@
 
         dom.github.reposContainer.innerHTML = featured
             .map((repo) => {
+                const safeName = escapeHTML(repo.name);
+                const safeDesc = escapeHTML(repo.description || 'No description available');
+                const safeLang = escapeHTML(repo.language);
                 const langDot = repo.language
-                    ? `<span class="repo-lang"><span class="lang-dot" style="background:${langColors[repo.language] || '#8888aa'}"></span>${repo.language}</span>`
+                    ? `<span class="repo-lang"><span class="lang-dot" style="background:${langColors[repo.language] || '#8888aa'}"></span>${safeLang}</span>`
                     : '';
                 const stars = repo.stargazers_count > 0
-                    ? `<span class="repo-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 19.771l-7.416 3.642 1.48-8.279L0 9.306l8.332-1.151z"/></svg>${repo.stargazers_count}</span>`
+                    ? `<span class="repo-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 19.771l-7.416 3.642 1.48-8.279L0 9.306l8.332-1.151z"/></svg>${escapeHTML(repo.stargazers_count)}</span>`
                     : '';
                 const forks = repo.forks_count > 0
-                    ? `<span class="repo-forks"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v6m0 0a3 3 0 106 0M6 9a3 3 0 006 0m0 0V3m-3 12a3 3 0 100 6 3 3 0 000-6zm0 0V9"/></svg>${repo.forks_count}</span>`
+                    ? `<span class="repo-forks"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v6m0 0a3 3 0 106 0M6 9a3 3 0 006 0m0 0V3m-3 12a3 3 0 100 6 3 3 0 000-6zm0 0V9"/></svg>${escapeHTML(repo.forks_count)}</span>`
                     : '';
 
                 return `
-                    <a href="${repo.html_url}" target="_blank" rel="noopener" class="repo-card glass-panel reveal-up">
+                    <a href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener noreferrer" class="repo-card glass-panel reveal-up">
                         <div class="repo-card-header">
-                            <span class="repo-name">${repo.name}</span>
+                            <span class="repo-name">${safeName}</span>
                             <span class="repo-visibility">${repo.private ? 'Private' : 'Public'}</span>
                         </div>
-                        <p class="repo-desc">${repo.description || 'No description available'}</p>
+                        <p class="repo-desc">${safeDesc}</p>
                         <div class="repo-meta">
                             ${langDot}
                             ${stars}
@@ -387,18 +401,25 @@
 
         const panels = $$('.glass-panel');
 
-        window.addEventListener('scroll', debounce(() => {
-            const scrollY = window.scrollY;
-            panels.forEach((panel) => {
-                const rect = panel.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-                    const offset = progress * 30 - 15;
-                    const afterEl = panel.querySelector('::after');
-                    panel.style.setProperty('--refraction-offset', `${offset}%`);
-                }
-            });
-        }, 16), { passive: true });
+        // Use rAF for scroll events instead of debounce which skips frames
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    panels.forEach((panel) => {
+                        const rect = panel.getBoundingClientRect();
+                        if (rect.top < window.innerHeight && rect.bottom > 0) {
+                            const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+                            const offset = progress * 30 - 15;
+                            panel.style.setProperty('--refraction-offset', `${offset}%`);
+                        }
+                    });
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
     }
 
     // ── Parallax Orbs ───────────────────────────────────────────────────
