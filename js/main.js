@@ -4,7 +4,7 @@
    ======================================================================== */
 
 (function () {
-    'use strict';
+    'use strict';   
 
     // ── Constants ───────────────────────────────────────────────────────
     const GITHUB_USERNAME = 'Mohammad-Faiz-Cloud-Engineer';
@@ -181,7 +181,6 @@
             updateRepos(repos);
             updateStats(user, repos);
         } catch (err) {
-            console.warn('GitHub API fetch failed:', err.message || err);
             useFallbackData();
         }
     }
