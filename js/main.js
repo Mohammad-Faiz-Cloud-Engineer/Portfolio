@@ -37,11 +37,6 @@
         },
     };
 
-    // ── Utilities ───────────────────────────────────────────────────────
-    function debounce(fn, ms) {
-        let t;
-        return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
-    }
 
     function lerp(a, b, t) {
         return a + (b - a) * t;
@@ -83,13 +78,8 @@
 
     // ── Navigation ──────────────────────────────────────────────────────
     function initNav() {
-        // Scroll state
-        let lastScroll = 0;
-
         function onScroll() {
-            const scrollY = window.scrollY;
-            dom.nav.classList.toggle('scrolled', scrollY > 40);
-            lastScroll = scrollY;
+            dom.nav.classList.toggle('scrolled', window.scrollY > 40);
         }
 
         window.addEventListener('scroll', onScroll, { passive: true });
@@ -190,8 +180,7 @@
             updateProfile(user);
             updateRepos(repos);
             updateStats(user, repos);
-        } catch (err) {
-            console.warn('GitHub API fetch failed, using fallback data:', err.message);
+        } catch (_) {
             useFallbackData();
         }
     }
@@ -420,32 +409,6 @@
         }
     }
 
-    // ── Glass Refraction on Scroll ──────────────────────────────────────
-    function initScrollRefraction() {
-        if (window.matchMedia('(max-width: 768px)').matches) return;
-
-        const panels = $$('.glass-panel');
-
-        // Use rAF for scroll events instead of debounce which skips frames
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const scrollY = window.scrollY;
-                    panels.forEach((panel) => {
-                        const rect = panel.getBoundingClientRect();
-                        if (rect.top < window.innerHeight && rect.bottom > 0) {
-                            const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-                            const offset = progress * 30 - 15;
-                            panel.style.setProperty('--refraction-offset', `${offset}%`);
-                        }
-                    });
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        }, { passive: true });
-    }
 
     // ── Parallax Orbs ───────────────────────────────────────────────────
     function initParallaxOrbs() {
