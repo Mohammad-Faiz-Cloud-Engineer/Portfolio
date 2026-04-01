@@ -238,10 +238,36 @@
     function updateRepos(repos) {
         if (!dom.github.reposContainer) return;
 
-        // Filter and sort — show top repos
+        const hiddenRepos = [
+            'Complete-Coding-Resources-Hub',
+            'Portfolio',
+            'portfolio',
+            'Ultra-Pro-Diff-Checker',
+            'Arena-Companion',
+            'Antigravity-Tool-Kit'
+        ];
+
+        const featuredRepos = [
+            'Devtools-Terminator',
+            'LocalFind-Data-API',
+            'Recommendation-System-Algorithm',
+            'Dynamic-Notification-System',
+            'ryco-ai-assistant'
+        ];
+
+        // Filter and sort — show targeted repos first, hide exclusions
         const featured = repos
-            .filter((r) => !r.fork)
+            .filter((r) => !r.fork && !hiddenRepos.includes(r.name))
             .sort((a, b) => {
+                const aIdx = featuredRepos.indexOf(a.name);
+                const bIdx = featuredRepos.indexOf(b.name);
+                
+                // If both are featured, sort by priority in the featured array
+                if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                if (aIdx !== -1) return -1;
+                if (bIdx !== -1) return 1;
+
+                // Fallback secondary sort by stars/activity for the rest
                 const scoreA = (a.stargazers_count * 2) + a.forks_count + (a.description ? 1 : 0);
                 const scoreB = (b.stargazers_count * 2) + b.forks_count + (b.description ? 1 : 0);
                 return scoreB - scoreA;
