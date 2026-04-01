@@ -760,12 +760,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .repo-title {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    word-break: break-all;
+    word-break: break-word; /* Soft wraps words rather than splitting mid-character */
 }
 
 .repo-title a {
