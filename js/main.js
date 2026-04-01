@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             
             // Phase 2: Repos
-            const reposResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=pushed&per_page=10`, {
+            const reposResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=pushed&per_page=100`, {
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
@@ -233,7 +233,22 @@ document.addEventListener('DOMContentLoaded', () => {
             let reposData = await reposResponse.json();
             
             if (Array.isArray(reposData)) {
-                reposData = reposData.filter(repo => !repo.fork).slice(0, 6);
+                const excludedRepos = ['Portfolio', 'Vibrant-Academy'];
+                const prioritizeRepos = ['Dynamic-Notification-System', 'Auto-Update-System-for-Static-Websites'];
+                
+                // Filter out forks and excluded repos
+                let filtered = reposData.filter(repo => !repo.fork && !excludedRepos.includes(repo.name));
+                
+                const topRepos = [];
+                prioritizeRepos.forEach(name => {
+                    const idx = filtered.findIndex(r => r.name === name);
+                    if (idx !== -1) {
+                        topRepos.push(filtered.splice(idx, 1)[0]);
+                    }
+                });
+                
+                reposData = [...topRepos, ...filtered].slice(0, 6);
+                
                 renderRepos(reposData, reposContainer);
                 
                 // IMPORTANT: Re-run Tilt Card init for newly generated DOM cards
