@@ -75,8 +75,7 @@
         function animate() {
             cx = lerp(cx, mx, 0.08);
             cy = lerp(cy, my, 0.08);
-            dom.cursorGlow.style.left = cx + 'px';
-            dom.cursorGlow.style.top = cy + 'px';
+            dom.cursorGlow.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%)`;
             requestAnimationFrame(animate);
         }
         animate();
