@@ -121,7 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
             card.classList.add('tilt-card');
             
             if (window.matchMedia("(pointer: fine)").matches) {
+                let leaveTimeout;
                 card.addEventListener('mousemove', e => {
+                    // Prevent slow animation during active tracking
+                    clearTimeout(leaveTimeout);
+                    card.style.transition = 'none';
+                    
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
@@ -138,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.addEventListener('mouseleave', () => {
                     card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                     card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-                    setTimeout(() => {
+                    leaveTimeout = setTimeout(() => {
                         card.style.transition = '';
                     }, 500);
                 });
@@ -198,10 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!statsContainer || !reposContainer) return;
         
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+        
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-            
             // Phase 1: Stats
             const userResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, {
                 signal: controller.signal
@@ -227,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const reposResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=pushed&per_page=100`, {
                 signal: controller.signal
             });
-            clearTimeout(timeoutId);
             
             if (!reposResponse.ok) throw new Error(`GitHub repos API returned status: ${reposResponse.status}`);
             let reposData = await reposResponse.json();
@@ -268,6 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>Unable to synchronize open-source metrics. Please check connection.</p>
                 </div>
             `;
+        } finally {
+            // Prevent timer leaks!
+            clearTimeout(timeoutId);
         }
     }
     
