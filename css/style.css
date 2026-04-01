@@ -170,6 +170,21 @@ h1, h2, h3, h4, h5, h6 {
 .max-w-md { max-width: 600px; }
 .w-100 { width: 100%; }
 
+/* Contact Layout */
+.contact-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.contact-layout main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--nav-height);
+    padding-bottom: 2rem;
+}
+
 /* ═══════════════════════════════════════════════════════
    Navigation — Liquid Glass
    ═══════════════════════════════════════════════════════ */
