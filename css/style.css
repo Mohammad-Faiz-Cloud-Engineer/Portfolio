@@ -141,7 +141,6 @@ button {
 .orb {
     position: absolute;
     border-radius: 50%;
-    /* Removing expensive filter: blur(120px) since radial-gradient handles the soft fade natively */
     opacity: 0.6;
     will-change: transform;
     animation: orbFloat 20s ease-in-out infinite;
