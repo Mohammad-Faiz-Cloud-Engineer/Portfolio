@@ -49,14 +49,6 @@ portfolio/
 
 No environment variables or API keys are required. The GitHub API is accessed via unauthenticated public endpoints (60 requests/hour rate limit).
 
-## Deployment
-
-This is a static site. Deploy to any static hosting provider:
-
-- **GitHub Pages** — Push to `main` branch, enable Pages in repository settings
-- **Vercel** — `vercel --prod`
-- **Netlify** — Drag and drop the project folder
-
 ## License
 
 Copyright 2026 Mohammad Faiz. All rights reserved.
